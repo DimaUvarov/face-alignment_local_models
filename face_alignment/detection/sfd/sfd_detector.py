@@ -7,8 +7,14 @@ from .net_s3fd import s3fd
 from .bbox import nms
 from .detect import detect, batch_detect
 
+try:
+    from torch.hub import get_dir
+except BaseException:
+    from torch.hub import _get_torch_home as get_dir
+import os
+
 models_urls = {
-    's3fd': 'https://www.adrianbulat.com/downloads/python-fan/s3fd-619a316812.pth',
+    's3fd': 'local_models/sfd/s3fd-619a316812.pth',
 }
 
 
@@ -21,7 +27,9 @@ class SFDDetector(FaceDetector):
 
         # Initialise the face detector
         if path_to_detector is None:
-            model_weights = load_url(models_urls['s3fd'])
+            hub_dir = os.path.abspath(os.getcwd())
+            model_path = os.path.join(hub_dir, models_urls['s3fd'])
+            model_weights = torch.load(model_path)
         else:
             model_weights = torch.load(path_to_detector)
 

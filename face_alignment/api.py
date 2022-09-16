@@ -5,6 +5,12 @@ from skimage import io
 import numpy as np
 from distutils.version import LooseVersion
 
+try:
+    from torch.hub import get_dir
+except BaseException:
+    from torch.hub import _get_torch_home as get_dir
+import os
+
 from .utils import *
 
 
@@ -29,19 +35,19 @@ class NetworkSize(IntEnum):
 
 
 default_model_urls = {
-    '2DFAN-4': 'https://www.adrianbulat.com/downloads/python-fan/2DFAN4-cd938726ad.zip',
-    '3DFAN-4': 'https://www.adrianbulat.com/downloads/python-fan/3DFAN4-4a694010b9.zip',
-    'depth': 'https://www.adrianbulat.com/downloads/python-fan/depth-6c4283c0e0.zip',
+    '2DFAN-4': 'local_models/fa/default/2DFAN4-cd938726ad.zip',
+    '3DFAN-4': 'local_models/fa/default/3DFAN4-4a694010b9.zip',
+    'depth': 'local_models/fa/default/depth-6c4283c0e0.zip',
 }
 
 models_urls = {
     '1.6': {
-        '2DFAN-4': 'https://www.adrianbulat.com/downloads/python-fan/2DFAN4_1.6-c827573f02.zip',
+        '2DFAN-4': 'local_models/fa/2d/2DFAN4_1.6-c827573f02.zip',
         '3DFAN-4': 'https://www.adrianbulat.com/downloads/python-fan/3DFAN4_1.6-ec5cf40a1d.zip',
         'depth': 'https://www.adrianbulat.com/downloads/python-fan/depth_1.6-2aa3f18772.zip',
     },
     '1.5': {
-        '2DFAN-4': 'https://www.adrianbulat.com/downloads/python-fan/2DFAN4_1.5-a60332318a.zip',
+        '2DFAN-4': 'local_models/fa/2d/2DFAN4_1.5-a60332318a.zip',
         '3DFAN-4': 'https://www.adrianbulat.com/downloads/python-fan/3DFAN4_1.5-176570af4d.zip',
         'depth': 'https://www.adrianbulat.com/downloads/python-fan/depth_1.5-bc10f98e39.zip',
     },
@@ -81,16 +87,17 @@ class FaceAlignment:
             network_name = '2DFAN-' + str(network_size)
         else:
             network_name = '3DFAN-' + str(network_size)
-        self.face_alignment_net = torch.jit.load(
-            load_file_from_url(models_urls.get(pytorch_version, default_model_urls)[network_name]))
+
+        hub_dir = os.path.abspath(os.getcwd())
+        model_path = os.path.join(hub_dir, models_urls.get(pytorch_version, default_model_urls)[network_name])
+        self.face_alignment_net = torch.jit.load(model_path)
 
         self.face_alignment_net.to(device)
         self.face_alignment_net.eval()
 
         # Initialiase the depth prediciton network
         if landmarks_type == LandmarksType._3D:
-            self.depth_prediciton_net = torch.jit.load(
-                load_file_from_url(models_urls.get(pytorch_version, default_model_urls)['depth']))
+            self.depth_prediciton_net = torch.jit.load(models_urls.get(pytorch_version, default_model_urls)['depth'])
 
             self.depth_prediciton_net.to(device)
             self.depth_prediciton_net.eval()

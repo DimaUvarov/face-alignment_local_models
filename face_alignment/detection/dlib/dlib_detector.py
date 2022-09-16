@@ -16,7 +16,7 @@ class DlibDetector(FaceDetector):
         if 'cuda' in device:
             if path_to_detector is None:
                 path_to_detector = load_file_from_url(
-                    "https://www.adrianbulat.com/downloads/dlib/mmod_human_face_detector.dat")
+                    "http://www.adrianbulat.com/downloads/dlib/mmod_human_face_detector.dat")
 
             self.face_detector = dlib.cnn_face_detection_model_v1(path_to_detector)
         else:

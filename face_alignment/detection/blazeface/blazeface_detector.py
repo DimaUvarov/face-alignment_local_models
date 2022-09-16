@@ -7,8 +7,8 @@ from .net_blazeface import BlazeFace
 from .detect import *
 
 models_urls = {
-    'blazeface_weights': 'https://github.com/hollance/BlazeFace-PyTorch/blob/master/blazeface.pth?raw=true',
-    'blazeface_anchors': 'https://github.com/hollance/BlazeFace-PyTorch/blob/master/anchors.npy?raw=true'
+    'blazeface_weights': 'http://github.com/hollance/BlazeFace-PyTorch/blob/master/blazeface.pth?raw=true',
+    'blazeface_anchors': 'http://github.com/hollance/BlazeFace-PyTorch/blob/master/anchors.npy?raw=true'
 }
 
 
